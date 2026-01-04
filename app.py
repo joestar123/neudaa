@@ -250,6 +250,11 @@ if submitted:
             
             # Time check
             source = "Google Server" if is_online else "Offline"
-            st.caption(f"Giờ động tâm: {now_dt.strftime('%H:%M:%S')} ({source})")
+            # Thay dòng st.caption cũ bằng đoạn này:
+st.markdown(f"""
+<div style="text-align: center; font-size: 14px; font-weight: bold; margin-top: 10px;">
+    Giờ động tâm: {now_dt.strftime('%H:%M:%S - %d/%m/%Y')}
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown('<div class="footer">Created by MinhMup</div>', unsafe_allow_html=True)
