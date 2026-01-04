@@ -18,15 +18,15 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- CSS TÙY CHỈNH (ĐÃ FIX DARK MODE) ---
+# --- CSS TÙY CHỈNH (ĐÃ SỬA LỖI MÀU) ---
 st.markdown("""
 <style>
-    /* Ép màu chữ đen cho các box nền sáng để tránh lỗi Dark Mode (chữ trắng nền trắng) */
+    /* Ép màu chữ đen cho các box nền sáng */
     
     .big-font {
-        font-size:30px !important;
+        font-size: 30px !important;
         font-weight: bold;
-        color: #333333 !important; /* Mặc định là màu đen xám */
+        /* ĐÃ XÓA DÒNG MÀU Ở ĐÂY ĐỂ CODE PYTHON TỰ QUYẾT ĐỊNH MÀU */
         text-align: center;
         margin-bottom: 5px;
     }
@@ -36,7 +36,7 @@ st.markdown("""
         border-radius: 10px;
         text-align: center;
         background-color: #f0f8ff; /* Nền xanh nhạt */
-        color: #000000 !important; /* Ép chữ đen */
+        color: #000000 !important; /* Mặc định chữ đen cho khung */
         margin-top: 20px;
     }
     .intro-text {
@@ -44,20 +44,20 @@ st.markdown("""
         font-size: 18px;
         font-style: italic;
         text-align: justify;
-        color: #455A64 !important; /* Ép màu xám đậm */
-        background-color: #eceff1; /* Nền xám nhạt */
+        color: #455A64 !important;
+        background-color: #eceff1;
         padding: 15px;
         border-radius: 5px;
         border-left: 5px solid #607d8b;
     }
     .element-text {
         font-size: 14px;
-        color: #555555 !important; /* Ép màu xám đậm */
+        color: #555555 !important;
         font-weight: bold;
     }
     .menh-info {
         font-size: 18px; 
-        color: #2E7D32 !important; /* Ép màu xanh lá đậm */
+        color: #2E7D32 !important;
         font-weight: bold; 
         margin-bottom: 15px;
         text-transform: uppercase;
@@ -65,13 +65,12 @@ st.markdown("""
     .summary-box {
         margin-top: 15px;
         padding: 10px;
-        background-color: #FFF3E0; /* Nền cam nhạt */
-        color: #000000 !important; /* Ép chữ đen */
+        background-color: #FFF3E0;
+        color: #000000 !important;
         border-radius: 5px;
         border: 1px dashed #FF9800;
     }
     
-    /* Footer style */
     .footer {
         text-align: center;
         margin-top: 50px;
@@ -228,23 +227,23 @@ if submitted:
                 num_menh = get_number_element(num)
                 is_hop, ly_do = check_compatibility(user_menh, num_menh)
                 
-                # --- XỬ LÝ MÀU SẮC (SỬA ĐỔI TẠI ĐÂY) ---
+                # Logic chọn màu
                 if is_hop:
                     compatible_count += 1
-                    # Màu Xanh Đậm cho số hợp (Green Dark)
-                    color = "#1b5e20" 
-                    text_note_color = "#2E7D32" # Màu chữ chú thích xanh
+                    # Màu Xanh Đậm (Green)
+                    color_style = "color: #1b5e20 !important;" 
+                    text_note_color = "color: #2E7D32 !important;"
                 else:
-                    # Màu Đen/Xám đậm cho số không hợp
-                    color = "#333333"
-                    text_note_color = "#757575" # Màu chữ chú thích xám
+                    # Màu Đen/Xám (Black/Gray)
+                    color_style = "color: #333333 !important;"
+                    text_note_color = "color: #757575 !important;"
                 
                 with cols[idx]:
                     st.markdown(f"""
                     <div style="text-align: center;">
-                        <div class="big-font" style="color: {color} !important">{num}</div>
+                        <div class="big-font" style="{color_style}">{num}</div>
                         <div class="element-text">Hành: {num_menh}</div>
-                        <div style="font-size: 12px; font-weight: bold; color: {text_note_color} !important">{ly_do}</div>
+                        <div style="font-size: 12px; font-weight: bold; {text_note_color}">{ly_do}</div>
                     </div>
                     """, unsafe_allow_html=True)
             
