@@ -29,17 +29,14 @@ st.markdown("""
         text-align: center;
         margin-bottom: 10px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        /* QUAN TRỌNG: Ép màu chữ gốc của thẻ thành đen */
         color: #000000 !important; 
     }
 
-    /* 2. Ép tất cả các thành phần con (p, div, span) bên trong card thành màu đen 
-       để chống lại setting mặc định của Streamlit Dark Mode */
     .lucky-card div, .lucky-card p, .lucky-card span {
         color: #000000 !important;
     }
 
-    /* 3. Style cho số to */
+    /* 2. Style cho số to */
     .big-number {
         font-size: 36px !important;
         font-weight: 900 !important;
@@ -47,14 +44,14 @@ st.markdown("""
         line-height: 1.2;
     }
 
-    /* 4. Style cho box thông tin Mệnh ở trên */
+    /* 3. Style cho box thông tin Mệnh ở trên */
     .result-header-box {
         border: 2px solid #1565C0;
         padding: 15px;
         border-radius: 10px;
         text-align: center;
-        background-color: #E3F2FD; /* Xanh rất nhạt */
-        color: #0d47a1 !important; /* Xanh đậm */
+        background-color: #E3F2FD;
+        color: #0d47a1 !important;
         margin-top: 20px;
         margin-bottom: 20px;
     }
@@ -62,7 +59,7 @@ st.markdown("""
         color: #0d47a1 !important;
     }
     
-    /* 5. Style cho Intro text */
+    /* 4. Style cho Intro text */
     .intro-text {
         font-family: "Times New Roman";
         font-size: 18px;
@@ -75,7 +72,7 @@ st.markdown("""
         border-left: 5px solid #607d8b;
     }
 
-    /* 6. Style cho Summary box */
+    /* 5. Style cho Summary box */
     .summary-box {
         margin-top: 25px;
         padding: 15px;
@@ -221,7 +218,6 @@ if submitted:
                 if is_hop:
                     compatible_count += 1
                     num_color = "#1b5e20" # Xanh đậm
-                    # UPDATED: Viền dày 5px và màu xanh lá đậm
                     border_css = "5px solid #2E7D32" 
                     note_color = "#2E7D32"
                 else:
@@ -230,7 +226,6 @@ if submitted:
                     note_color = "#546E7A"
                 
                 with cols[idx]:
-                    # Sử dụng class .lucky-card đã định nghĩa ở CSS
                     st.markdown(f"""
                     <div class="lucky-card" style="border: {border_css};">
                         <div class="big-number" style="color: {num_color} !important;">{num}</div>
@@ -248,13 +243,12 @@ if submitted:
             </div>
             """, unsafe_allow_html=True)
             
-            # Time check
-            source = "Google Server" if is_online else "Offline"
-            # Thay dòng st.caption cũ bằng đoạn này:
-st.markdown(f"""
-<div style="text-align: center; font-size: 14px; font-weight: bold; margin-top: 10px;">
-    Giờ động tâm: {now_dt.strftime('%H:%M:%S - %d/%m/%Y')}
-</div>
-""", unsafe_allow_html=True)
+            # --- FIXED: Đưa phần hiển thị giờ vào trong khối if submitted ---
+            st.markdown(f"""
+            <div style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 10px;">
+                Giờ động tâm: {now_dt.strftime('%H:%M:%S - %d/%m/%Y')}
+            </div>
+            """, unsafe_allow_html=True)
 
+# Footer nằm ngoài cùng để luôn hiển thị
 st.markdown('<div class="footer">Created by MinhMup</div>', unsafe_allow_html=True)
