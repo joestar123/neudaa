@@ -13,7 +13,7 @@ except ImportError:
 
 # --- CẤU HÌNH TRANG ---
 st.set_page_config(
-    page_title="18h30 Team - Phong Thủy", # Đã đổi tên
+    page_title="18h30 Team - Phong Thủy",
     page_icon="🔮",
     layout="centered"
 )
@@ -26,7 +26,7 @@ st.markdown("""
     .big-font {
         font-size:30px !important;
         font-weight: bold;
-        color: #D32F2F !important;
+        color: #333333 !important; /* Mặc định là màu đen xám */
         text-align: center;
         margin-bottom: 5px;
     }
@@ -150,7 +150,7 @@ def get_google_time_hanoi():
 
 # --- GIAO DIỆN CHÍNH ---
 
-st.title("18h30 Team") # Đã đổi tên
+st.title("18h30 Team")
 st.subheader("DỰ ĐOÁN SỐ MAY MẮN & PHONG THỦY")
 
 st.markdown("""
@@ -228,20 +228,23 @@ if submitted:
                 num_menh = get_number_element(num)
                 is_hop, ly_do = check_compatibility(user_menh, num_menh)
                 
-                # Biến color này để đổi màu số to, nhưng ta cần cẩn thận với background
-                # Vì background đã là light (#f0f8ff), nên màu Đỏ (#D32F2F) hoặc Đen (black) đều rõ.
-                color = "black"
+                # --- XỬ LÝ MÀU SẮC (SỬA ĐỔI TẠI ĐÂY) ---
                 if is_hop:
                     compatible_count += 1
-                    color = "#D32F2F"
+                    # Màu Xanh Đậm cho số hợp (Green Dark)
+                    color = "#1b5e20" 
+                    text_note_color = "#2E7D32" # Màu chữ chú thích xanh
+                else:
+                    # Màu Đen/Xám đậm cho số không hợp
+                    color = "#333333"
+                    text_note_color = "#757575" # Màu chữ chú thích xám
                 
                 with cols[idx]:
-                    # Style inline này cũng cần đảm bảo màu sắc
                     st.markdown(f"""
                     <div style="text-align: center;">
                         <div class="big-font" style="color: {color} !important">{num}</div>
                         <div class="element-text">Hành: {num_menh}</div>
-                        <div style="font-size: 12px; font-weight: bold; color: {'#2E7D32' if is_hop else '#757575'} !important">{ly_do}</div>
+                        <div style="font-size: 12px; font-weight: bold; color: {text_note_color} !important">{ly_do}</div>
                     </div>
                     """, unsafe_allow_html=True)
             
