@@ -167,7 +167,7 @@ with st.form("main_form"):
     st.markdown("**2. Bạn chọn số cho ngày nào?**")
     target_date = st.date_input("Chọn ngày dự đoán", value=datetime.now())
 
-    st.markdown("**3. Những con số bạn đang nghĩ tới (Tối đa 5 số)**")
+    st.markdown("**3. Những con số bạn đang nghĩ tới (Tối đa 5 số có 2 chữ số)**")
     cols = st.columns(5)
     fav_inputs = []
     for i, col in enumerate(cols):
@@ -244,7 +244,7 @@ if submitted:
             <div class="summary-box">
                 <b>🔮 TỔNG KẾT:</b><br>
                 Có <b>{compatible_count}/5</b> con số hợp mệnh (Tương sinh/Bình hòa).<br>
-                <i>(Hành của số tính theo Hà Đồ - số tận cùng)</i>
+                <i>(Hành của số tính theo Hà Đồ)</i>
             </div>
             """, unsafe_allow_html=True)
             
