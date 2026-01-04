@@ -21,57 +21,55 @@ st.set_page_config(
 # --- CSS TÙY CHỈNH (ĐÃ FIX DARK MODE) ---
 st.markdown("""
 <style>
-    /* Ép màu chữ đen cho các box nền sáng để tránh lỗi Dark Mode (chữ trắng nền trắng) */
-    
+    /* Ép màu chữ đen cho các box nền sáng */
     .big-font {
-        font-size:30px !important;
+        font-size: 30px !important;
         font-weight: bold;
-        color: #333333 !important; /* Mặc định là màu đen xám */
         text-align: center;
         margin-bottom: 5px;
     }
-    .result-box {
+    /* Box chứa tiêu đề kết quả */
+    .result-header-box {
         border: 2px solid #1565C0;
-        padding: 20px;
+        padding: 15px;
         border-radius: 10px;
         text-align: center;
         background-color: #f0f8ff; /* Nền xanh nhạt */
         color: #000000 !important; /* Ép chữ đen */
         margin-top: 20px;
+        margin-bottom: 20px;
     }
     .intro-text {
         font-family: "Times New Roman";
         font-size: 18px;
         font-style: italic;
         text-align: justify;
-        color: #455A64 !important; /* Ép màu xám đậm */
-        background-color: #eceff1; /* Nền xám nhạt */
+        color: #455A64 !important;
+        background-color: #eceff1;
         padding: 15px;
         border-radius: 5px;
         border-left: 5px solid #607d8b;
     }
     .element-text {
         font-size: 14px;
-        color: #555555 !important; /* Ép màu xám đậm */
+        color: #555555 !important;
         font-weight: bold;
     }
     .menh-info {
         font-size: 18px; 
-        color: #2E7D32 !important; /* Ép màu xanh lá đậm */
+        color: #2E7D32 !important;
         font-weight: bold; 
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         text-transform: uppercase;
     }
     .summary-box {
-        margin-top: 15px;
-        padding: 10px;
-        background-color: #FFF3E0; /* Nền cam nhạt */
-        color: #000000 !important; /* Ép chữ đen */
+        margin-top: 25px;
+        padding: 15px;
+        background-color: #FFF3E0;
+        color: #000000 !important;
         border-radius: 5px;
         border: 1px dashed #FF9800;
     }
-    
-    /* Footer style */
     .footer {
         text-align: center;
         margin-top: 50px;
@@ -215,12 +213,16 @@ if submitted:
             kq = [f"{random.randint(0,99):02d}" for _ in range(5)]
             
             # --- HIỂN THỊ KẾT QUẢ ---
+            
+            # 1. Hiển thị Header (Thông tin mệnh)
             st.markdown(f"""
-            <div class="result-box">
+            <div class="result-header-box">
                 <div class="menh-info">BẠN SINH NĂM {lunar_year} (Âm Lịch) - MỆNH {user_menh}</div>
-                <h3>KẾT QUẢ PHÂN TÍCH</h3>
+                <h3 style="margin:0; color: #333 !important;">KẾT QUẢ PHÂN TÍCH</h3>
+            </div>
             """, unsafe_allow_html=True)
             
+            # 2. Hiển thị từng con số (Mỗi số 1 card riêng để fix dark mode)
             cols = st.columns(5)
             compatible_count = 0
             
@@ -228,33 +230,39 @@ if submitted:
                 num_menh = get_number_element(num)
                 is_hop, ly_do = check_compatibility(user_menh, num_menh)
                 
-                # --- XỬ LÝ MÀU SẮC (SỬA ĐỔI TẠI ĐÂY) ---
+                # Logic màu sắc
                 if is_hop:
                     compatible_count += 1
-                    # Màu Xanh Đậm cho số hợp (Green Dark)
-                    color = "#1b5e20" 
-                    text_note_color = "#2E7D32" # Màu chữ chú thích xanh
+                    color = "#1b5e20" # Xanh đậm
+                    text_note_color = "#2E7D32"
+                    border_style = "2px solid #81C784" # Viền xanh
                 else:
-                    # Màu Đen/Xám đậm cho số không hợp
-                    color = "#333333"
-                    text_note_color = "#757575" # Màu chữ chú thích xám
+                    color = "#333333" # Đen/Xám đậm
+                    text_note_color = "#757575"
+                    border_style = "1px solid #cfd8dc" # Viền xám
                 
                 with cols[idx]:
                     st.markdown(f"""
-                    <div style="text-align: center;">
+                    <div style="
+                        text-align: center; 
+                        background-color: #f0f8ff; 
+                        padding: 10px; 
+                        border-radius: 10px; 
+                        border: {border_style};
+                        margin-bottom: 10px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    ">
                         <div class="big-font" style="color: {color} !important">{num}</div>
                         <div class="element-text">Hành: {num_menh}</div>
                         <div style="font-size: 12px; font-weight: bold; color: {text_note_color} !important">{ly_do}</div>
                     </div>
                     """, unsafe_allow_html=True)
             
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            # Phần thống kê
+            # 3. Phần thống kê tổng hợp
             st.markdown(f"""
             <div class="summary-box">
                 <b>🔮 LUẬN GIẢI:</b><br>
-                Có <b>{compatible_count}/5</b> con số hợp mệnh với bạn (Tương sinh hoặc Tương hỗ).<br>
+                Có <b>{compatible_count}/5</b> con số hợp mệnh với bạn (Tương sinh hoặc Bình hòa).<br>
                 <i>(Mệnh của số tính theo chữ số tận cùng - thuật Hà Đồ)</i>
             </div>
             """, unsafe_allow_html=True)
@@ -264,5 +272,5 @@ if submitted:
             source_text = "Google Server" if is_online else "Offline Mode"
             st.caption(f"Time check: {now_dt.strftime('%H:%M:%S')} ({source_text})")
 
-# --- FOOTER MỚI ---
+# --- FOOTER ---
 st.markdown('<div class="footer">Created by MinhMup</div>', unsafe_allow_html=True)
