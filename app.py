@@ -166,7 +166,7 @@ st.subheader("DỰ ĐOÁN SỐ MAY MẮN & PHONG THỦY")
 st.markdown("""
 <div class="intro-text">
     Ngẫu nhiên không được tạo ra. Nó được khai sinh.<br>
-    Sử dụng Entropy thời gian thực kết hợp với <b>Ngũ Hành Bát Quái</b> để tìm ra con số không chỉ ngẫu nhiên mà còn hòa hợp với vận mệnh của bạn.
+    Sử dụng Entropy, Kinh dịch thời gian thực kết hợp với Ngũ Hành Bát Quái để tìm ra con số không chỉ ngẫu nhiên mà còn hòa hợp với vận mệnh của bạn.
 </div>
 """, unsafe_allow_html=True)
 
