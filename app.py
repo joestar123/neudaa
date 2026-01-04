@@ -209,7 +209,7 @@ if submitted:
             </div>
             """, unsafe_allow_html=True)
             
-            # HIỂN THỊ SỐ (FIXED)
+            # HIỂN THỊ SỐ
             cols = st.columns(5)
             compatible_count = 0
             
@@ -221,7 +221,8 @@ if submitted:
                 if is_hop:
                     compatible_count += 1
                     num_color = "#1b5e20" # Xanh đậm
-                    border_css = "2px solid #66BB6A"
+                    # UPDATED: Viền dày 5px và màu xanh lá đậm
+                    border_css = "5px solid #2E7D32" 
                     note_color = "#2E7D32"
                 else:
                     num_color = "#212121" # Đen xám
