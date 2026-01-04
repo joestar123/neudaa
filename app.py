@@ -4,7 +4,7 @@ import random
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 
-# --- IMPORT THƯ VIỆN ÂM LỊCH (XỬ LÝ LỖI NẾU CHƯA CÀI) ---
+# --- IMPORT THƯ VIỆN ÂM LỊCH ---
 try:
     from lunardate import LunarDate
     HAS_LUNAR_LIB = True
@@ -18,27 +18,27 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- CSS TÙY CHỈNH (ĐÃ SỬA LỖI MÀU) ---
+# --- CSS TÙY CHỈNH (QUAN TRỌNG: ĐÃ XÓA MÀU CỨNG Ở .big-font) ---
 st.markdown("""
 <style>
-    /* Ép màu chữ đen cho các box nền sáng */
-    
     .big-font {
         font-size: 30px !important;
         font-weight: bold;
-        /* ĐÃ XÓA DÒNG MÀU Ở ĐÂY ĐỂ CODE PYTHON TỰ QUYẾT ĐỊNH MÀU */
+        /* ĐÃ XÓA DÒNG 'color: ...' ĐỂ PYTHON TỰ QUYẾT ĐỊNH MÀU */
         text-align: center;
         margin-bottom: 5px;
     }
+    
     .result-box {
         border: 2px solid #1565C0;
         padding: 20px;
         border-radius: 10px;
         text-align: center;
-        background-color: #f0f8ff; /* Nền xanh nhạt */
-        color: #000000 !important; /* Mặc định chữ đen cho khung */
+        background-color: #f0f8ff; /* Nền xanh nhạt cố định */
+        color: #000000 !important; /* Chữ mặc định đen */
         margin-top: 20px;
     }
+    
     .intro-text {
         font-family: "Times New Roman";
         font-size: 18px;
@@ -50,11 +50,13 @@ st.markdown("""
         border-radius: 5px;
         border-left: 5px solid #607d8b;
     }
+    
     .element-text {
         font-size: 14px;
         color: #555555 !important;
         font-weight: bold;
     }
+    
     .menh-info {
         font-size: 18px; 
         color: #2E7D32 !important;
@@ -62,6 +64,7 @@ st.markdown("""
         margin-bottom: 15px;
         text-transform: uppercase;
     }
+    
     .summary-box {
         margin-top: 15px;
         padding: 10px;
@@ -81,10 +84,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- HÀM LOGIC PHONG THỦY ---
+# --- CÁC HÀM LOGIC ---
 
 def get_lunar_year_number(date_obj):
-    """Chuyển đổi ngày dương sang năm âm lịch"""
     if HAS_LUNAR_LIB:
         lunar = LunarDate.fromSolarDate(date_obj.year, date_obj.month, date_obj.day)
         return lunar.year
@@ -92,7 +94,6 @@ def get_lunar_year_number(date_obj):
         return date_obj.year
 
 def calculate_menh_nien(year):
-    """Tính mệnh niên (Ngũ hành nạp âm) dựa trên Can Chi."""
     can_values = {4:1, 5:1, 6:2, 7:2, 8:3, 9:3, 0:4, 1:4, 2:5, 3:5}
     can_val = can_values[year % 10]
     
@@ -102,49 +103,32 @@ def calculate_menh_nien(year):
     else: chi_val = 2
     
     total = can_val + chi_val
-    if total > 5:
-        total -= 5
-        
+    if total > 5: total -= 5
     menh_map = {1: "Kim", 2: "Thủy", 3: "Hỏa", 4: "Thổ", 5: "Mộc"}
     return menh_map[total]
 
 def get_number_element(number_str):
-    """Lấy hành của con số dựa trên Hà Đồ (số cuối)"""
     last_digit = int(number_str[-1])
     if last_digit in [1, 6]: return "Thủy"
     if last_digit in [2, 7]: return "Hỏa"
     if last_digit in [3, 8]: return "Mộc"
     if last_digit in [4, 9]: return "Kim"
-    return "Thổ" # 0, 5
+    return "Thổ"
 
 def check_compatibility(user_menh, num_menh):
-    """Kiểm tra tương sinh."""
-    tuong_sinh = {
-        "Kim": "Thủy",
-        "Thủy": "Mộc",
-        "Mộc": "Hỏa",
-        "Hỏa": "Thổ",
-        "Thổ": "Kim"
-    }
-    
-    if user_menh == num_menh:
-        return True, "Bình Hòa"
-    
-    if tuong_sinh.get(num_menh) == user_menh:
-        return True, "Tương Sinh"
-        
+    tuong_sinh = {"Kim": "Thủy", "Thủy": "Mộc", "Mộc": "Hỏa", "Hỏa": "Thổ", "Thổ": "Kim"}
+    if user_menh == num_menh: return True, "Bình Hòa"
+    if tuong_sinh.get(num_menh) == user_menh: return True, "Tương Sinh"
     return False, "Không Hợp"
 
-# --- HÀM LẤY GIỜ GOOGLE ---
 def get_google_time_hanoi():
     try:
         req = urllib.request.Request("https://www.google.com", method='HEAD')
         with urllib.request.urlopen(req, timeout=5) as response:
             date_str = response.headers['Date']
             utc_time = parsedate_to_datetime(date_str)
-            hanoi_time = utc_time + timedelta(hours=7)
-            return hanoi_time.replace(tzinfo=None), True
-    except Exception as e:
+            return (utc_time + timedelta(hours=7)).replace(tzinfo=None), True
+    except:
         return datetime.now(), False
 
 # --- GIAO DIỆN CHÍNH ---
@@ -160,60 +144,39 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if not HAS_LUNAR_LIB:
-    st.warning("⚠️ Chưa cài đặt thư viện 'lunardate'. Hệ thống sẽ tính Mệnh dựa trên năm Dương lịch. Vui lòng cài đặt: `pip install lunardate`")
+    st.warning("⚠️ Chưa cài đặt thư viện 'lunardate'. Vui lòng cài đặt: pip install lunardate")
 
 st.divider()
 
 with st.form("main_form"):
     st.markdown("**1. Ngày sinh (Để tính Mệnh)**")
     dob = st.date_input("Chọn ngày sinh của bạn", min_value=datetime(1900, 1, 1), value=datetime(2000, 1, 1))
-
     st.markdown("**2. Bạn chọn số cho ngày nào?**")
     target_date = st.date_input("Chọn ngày muốn dự đoán", value=datetime.now())
-
     st.markdown("**3. Những con số bạn đang nghĩ tới (Tối đa 5 số)**")
     cols = st.columns(5)
     fav_inputs = []
     for i, col in enumerate(cols):
         with col:
-            val = st.text_input(f"Số {i+1}", max_chars=2, placeholder="--")
-            fav_inputs.append(val)
-
+            fav_inputs.append(st.text_input(f"Số {i+1}", max_chars=2, placeholder="--"))
     submitted = st.form_submit_button("PHÂN TÍCH & LUẬN GIẢI", use_container_width=True, type="primary")
 
 if submitted:
-    valid_favs = []
-    errors = []
+    valid_favs = [f.strip() for f in fav_inputs if f.strip().isdigit() and len(f.strip()) == 2]
     
-    for i, f in enumerate(fav_inputs, 1):
-        f = f.strip()
-        if f:
-            if not f.isdigit() or len(f) != 2:
-                errors.append(f"Số thứ {i} ('{f}') không hợp lệ (Phải là 2 chữ số).")
-            else:
-                valid_favs.append(f)
-    
-    if errors:
-        for e in errors:
-            st.error(e)
+    if len(valid_favs) < len([f for f in fav_inputs if f.strip()]):
+        st.error("Vui lòng chỉ nhập số có 2 chữ số!")
     else:
-        with st.spinner("Đang kết nối Google Server & Tính toán Ngũ hành..."):
+        with st.spinner("Đang kết nối Google Server..."):
             now_dt, is_online = get_google_time_hanoi()
-            
-            # --- TÍNH TOÁN PHONG THỦY ---
             lunar_year = get_lunar_year_number(dob)
             user_menh = calculate_menh_nien(lunar_year)
             
-            # --- TẠO SEED ---
-            dob_str = dob.strftime("%d%m%Y")
-            target_date_str = target_date.strftime("%d%m%Y")
-            fav_string = "".join(valid_favs)
-            seed_val = f"{dob_str}{target_date_str}{now_dt.strftime('%d%m%Y%H%M%S')}{fav_string}"
-            
+            # Seed generator
+            seed_val = f"{dob.strftime('%d%m%Y')}{target_date.strftime('%d%m%Y')}{now_dt.strftime('%d%m%Y%H%M%S')}{''.join(valid_favs)}"
             random.seed(seed_val)
             kq = [f"{random.randint(0,99):02d}" for _ in range(5)]
             
-            # --- HIỂN THỊ KẾT QUẢ ---
             st.markdown(f"""
             <div class="result-box">
                 <div class="menh-info">BẠN SINH NĂM {lunar_year} (Âm Lịch) - MỆNH {user_menh}</div>
@@ -227,41 +190,35 @@ if submitted:
                 num_menh = get_number_element(num)
                 is_hop, ly_do = check_compatibility(user_menh, num_menh)
                 
-                # Logic chọn màu
+                # --- QUYẾT ĐỊNH MÀU SẮC ---
                 if is_hop:
                     compatible_count += 1
                     # Màu Xanh Đậm (Green)
-                    color_style = "color: #1b5e20 !important;" 
-                    text_note_color = "color: #2E7D32 !important;"
+                    final_color = "#1b5e20" 
+                    note_color = "#2E7D32"
                 else:
-                    # Màu Đen/Xám (Black/Gray)
-                    color_style = "color: #333333 !important;"
-                    text_note_color = "color: #757575 !important;"
+                    # Màu Đen Xám (Dark Gray)
+                    final_color = "#333333"
+                    note_color = "#757575"
                 
                 with cols[idx]:
                     st.markdown(f"""
                     <div style="text-align: center;">
-                        <div class="big-font" style="{color_style}">{num}</div>
+                        <div class="big-font" style="color: {final_color} !important;">{num}</div>
                         <div class="element-text">Hành: {num_menh}</div>
-                        <div style="font-size: 12px; font-weight: bold; {text_note_color}">{ly_do}</div>
+                        <div style="font-size: 12px; font-weight: bold; color: {note_color} !important;">{ly_do}</div>
                     </div>
                     """, unsafe_allow_html=True)
             
             st.markdown("</div>", unsafe_allow_html=True)
             
-            # Phần thống kê
             st.markdown(f"""
             <div class="summary-box">
                 <b>🔮 LUẬN GIẢI:</b><br>
-                Có <b>{compatible_count}/5</b> con số hợp mệnh với bạn (Tương sinh hoặc Tương hỗ).<br>
-                <i>(Mệnh của số tính theo chữ số tận cùng - thuật Hà Đồ)</i>
+                Có <b>{compatible_count}/5</b> con số hợp mệnh với bạn.<br>
             </div>
             """, unsafe_allow_html=True)
             
-            # Time check footer
-            time_color = "green" if is_online else "red"
-            source_text = "Google Server" if is_online else "Offline Mode"
-            st.caption(f"Time check: {now_dt.strftime('%H:%M:%S')} ({source_text})")
+            st.caption(f"Time check: {now_dt.strftime('%H:%M:%S')} ({'Google Server' if is_online else 'Offline'})")
 
-# --- FOOTER MỚI ---
 st.markdown('<div class="footer">Created by MinhMup</div>', unsafe_allow_html=True)
