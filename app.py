@@ -18,49 +18,46 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- CSS TÙY CHỈNH (ĐÃ CẬP NHẬT DARK MODE + CHỮ TRẮNG) ---
+# --- CSS TÙY CHỈNH (ĐÃ FIX DARK MODE) ---
 st.markdown("""
 <style>
-    /* 1. Sửa màu số hiển thị to thành màu trắng mặc định */
+    /* Ép màu chữ đen cho các box nền sáng để tránh lỗi Dark Mode (chữ trắng nền trắng) */
+    
     .big-font {
-        font-size: 30px !important;
+        font-size:30px !important;
         font-weight: bold;
-        color: #FFFFFF !important; /* Đổi thành TRẮNG */
+        color: #333333 !important; /* Mặc định là màu đen xám */
         text-align: center;
         margin-bottom: 5px;
     }
-    
-    /* 2. Sửa khung kết quả thành nền tối để nổi chữ trắng */
     .result-box {
         border: 2px solid #1565C0;
         padding: 20px;
         border-radius: 10px;
         text-align: center;
-        background-color: #262730; /* Nền tối (Dark gray) */
-        color: #FFFFFF !important; /* Chữ trắng */
+        background-color: #f0f8ff; /* Nền xanh nhạt */
+        color: #000000 !important; /* Ép chữ đen */
         margin-top: 20px;
     }
-
-    /* Các phần giữ nguyên style cũ nhưng tinh chỉnh nhẹ */
     .intro-text {
         font-family: "Times New Roman";
         font-size: 18px;
         font-style: italic;
         text-align: justify;
-        color: #455A64 !important; 
-        background-color: #eceff1; 
+        color: #455A64 !important; /* Ép màu xám đậm */
+        background-color: #eceff1; /* Nền xám nhạt */
         padding: 15px;
         border-radius: 5px;
         border-left: 5px solid #607d8b;
     }
     .element-text {
         font-size: 14px;
-        color: #B0BEC5 !important; /* Màu xám nhạt cho dễ đọc trên nền tối */
+        color: #555555 !important; /* Ép màu xám đậm */
         font-weight: bold;
     }
     .menh-info {
         font-size: 18px; 
-        color: #66BB6A !important; /* Xanh lá sáng hơn */
+        color: #2E7D32 !important; /* Ép màu xanh lá đậm */
         font-weight: bold; 
         margin-bottom: 15px;
         text-transform: uppercase;
@@ -68,12 +65,13 @@ st.markdown("""
     .summary-box {
         margin-top: 15px;
         padding: 10px;
-        background-color: #FFF3E0; /* Giữ nền cam nhạt để làm điểm nhấn */
-        color: #000000 !important; /* Chữ đen trong box này */
+        background-color: #FFF3E0; /* Nền cam nhạt */
+        color: #000000 !important; /* Ép chữ đen */
         border-radius: 5px;
         border: 1px dashed #FF9800;
     }
     
+    /* Footer style */
     .footer {
         text-align: center;
         margin-top: 50px;
@@ -230,16 +228,16 @@ if submitted:
                 num_menh = get_number_element(num)
                 is_hop, ly_do = check_compatibility(user_menh, num_menh)
                 
-                # --- XỬ LÝ MÀU SẮC (LOGIC MỚI) ---
+                # --- XỬ LÝ MÀU SẮC (SỬA ĐỔI TẠI ĐÂY) ---
                 if is_hop:
                     compatible_count += 1
-                    # Màu Xanh Lá Sáng (Light Green) cho nổi trên nền tối
-                    color = "#4CAF50" 
-                    text_note_color = "#81C784" 
+                    # Màu Xanh Đậm cho số hợp (Green Dark)
+                    color = "#1b5e20" 
+                    text_note_color = "#2E7D32" # Màu chữ chú thích xanh
                 else:
-                    # Màu TRẮNG cho trường hợp không hợp
-                    color = "#FFFFFF"
-                    text_note_color = "#E0E0E0" # Màu chữ chú thích trắng xám
+                    # Màu Đen/Xám đậm cho số không hợp
+                    color = "#333333"
+                    text_note_color = "#757575" # Màu chữ chú thích xám
                 
                 with cols[idx]:
                     st.markdown(f"""
