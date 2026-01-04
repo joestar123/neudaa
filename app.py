@@ -13,18 +13,20 @@ except ImportError:
 
 # --- CẤU HÌNH TRANG ---
 st.set_page_config(
-    page_title="NEU DAA Digital Team - Phong Thủy",
+    page_title="18h30 Team - Phong Thủy", # Đã đổi tên
     page_icon="🔮",
     layout="centered"
 )
 
-# --- CSS TÙY CHỈNH ---
+# --- CSS TÙY CHỈNH (ĐÃ FIX DARK MODE) ---
 st.markdown("""
 <style>
+    /* Ép màu chữ đen cho các box nền sáng để tránh lỗi Dark Mode (chữ trắng nền trắng) */
+    
     .big-font {
         font-size:30px !important;
         font-weight: bold;
-        color: #D32F2F;
+        color: #D32F2F !important;
         text-align: center;
         margin-bottom: 5px;
     }
@@ -33,7 +35,8 @@ st.markdown("""
         padding: 20px;
         border-radius: 10px;
         text-align: center;
-        background-color: #f0f8ff;
+        background-color: #f0f8ff; /* Nền xanh nhạt */
+        color: #000000 !important; /* Ép chữ đen */
         margin-top: 20px;
     }
     .intro-text {
@@ -41,20 +44,20 @@ st.markdown("""
         font-size: 18px;
         font-style: italic;
         text-align: justify;
-        color: #455A64;
-        background-color: #eceff1;
+        color: #455A64 !important; /* Ép màu xám đậm */
+        background-color: #eceff1; /* Nền xám nhạt */
         padding: 15px;
         border-radius: 5px;
         border-left: 5px solid #607d8b;
     }
     .element-text {
         font-size: 14px;
-        color: #555;
+        color: #555555 !important; /* Ép màu xám đậm */
         font-weight: bold;
     }
     .menh-info {
         font-size: 18px; 
-        color: #2E7D32; 
+        color: #2E7D32 !important; /* Ép màu xanh lá đậm */
         font-weight: bold; 
         margin-bottom: 15px;
         text-transform: uppercase;
@@ -62,9 +65,19 @@ st.markdown("""
     .summary-box {
         margin-top: 15px;
         padding: 10px;
-        background-color: #FFF3E0;
+        background-color: #FFF3E0; /* Nền cam nhạt */
+        color: #000000 !important; /* Ép chữ đen */
         border-radius: 5px;
         border: 1px dashed #FF9800;
+    }
+    
+    /* Footer style */
+    .footer {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 12px;
+        color: #888;
+        font-style: italic;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -77,34 +90,18 @@ def get_lunar_year_number(date_obj):
         lunar = LunarDate.fromSolarDate(date_obj.year, date_obj.month, date_obj.day)
         return lunar.year
     else:
-        # Fallback nếu không có thư viện: Giả định năm dương = năm âm (sai số ở tháng 1, 2)
         return date_obj.year
 
 def calculate_menh_nien(year):
-    """
-    Tính mệnh niên (Ngũ hành nạp âm) dựa trên Can Chi.
-    Công thức: Can + Chi = Mệnh. (Nếu > 5 thì trừ 5)
-    Quy ước:
-    - Mệnh: 1=Kim, 2=Thủy, 3=Hỏa, 4=Thổ, 5=Mộc
-    """
-    # 1. Tính Can (Year % 10)
-    # Canh=0, Tân=1, Nhâm=2, Quý=3, Giáp=4, Ất=5, Bính=6, Đinh=7, Mậu=8, Kỷ=9
-    # Giá trị quy đổi Can: Giáp/Ất=1, Bính/Đinh=2, Mậu/Kỷ=3, Canh/Tân=4, Nhâm/Quý=5
+    """Tính mệnh niên (Ngũ hành nạp âm) dựa trên Can Chi."""
     can_values = {4:1, 5:1, 6:2, 7:2, 8:3, 9:3, 0:4, 1:4, 2:5, 3:5}
     can_val = can_values[year % 10]
     
-    # 2. Tính Chi (Year % 12)
-    # Thân=0, Dậu=1, Tuất=2, Hợi=3, Tý=4, Sửu=5, Dần=6, Mão=7, Thìn=8, Tỵ=9, Ngọ=10, Mùi=11
-    # Giá trị quy đổi Chi:
-    # Tý, Sửu, Ngọ, Mùi (4,5,10,11) = 0
-    # Dần, Mão, Thân, Dậu (6,7,0,1) = 1
-    # Thìn, Tỵ, Tuất, Hợi (8,9,2,3) = 2
     chi_mod = year % 12
     if chi_mod in [4, 5, 10, 11]: chi_val = 0
     elif chi_mod in [6, 7, 0, 1]: chi_val = 1
     else: chi_val = 2
     
-    # 3. Tính tổng
     total = can_val + chi_val
     if total > 5:
         total -= 5
@@ -122,25 +119,18 @@ def get_number_element(number_str):
     return "Thổ" # 0, 5
 
 def check_compatibility(user_menh, num_menh):
-    """
-    Kiểm tra tương sinh.
-    Quy luật Tương sinh: Kim->Thủy->Mộc->Hỏa->Thổ->Kim
-    Hợp = Tương Sinh (Số sinh Người) hoặc Bình Hòa (Cùng mệnh)
-    """
+    """Kiểm tra tương sinh."""
     tuong_sinh = {
-        "Kim": "Thủy", # Kim sinh Thủy
+        "Kim": "Thủy",
         "Thủy": "Mộc",
         "Mộc": "Hỏa",
         "Hỏa": "Thổ",
         "Thổ": "Kim"
     }
     
-    # Trường hợp 1: Bình hòa (Cùng mệnh) - Tốt
     if user_menh == num_menh:
         return True, "Bình Hòa"
     
-    # Trường hợp 2: Tương sinh (Số sinh cho Người - Rất tốt)
-    # Tức là: num_menh là mẹ của user_menh
     if tuong_sinh.get(num_menh) == user_menh:
         return True, "Tương Sinh"
         
@@ -160,7 +150,7 @@ def get_google_time_hanoi():
 
 # --- GIAO DIỆN CHÍNH ---
 
-st.title("NEU DAA Digital Team")
+st.title("18h30 Team") # Đã đổi tên
 st.subheader("DỰ ĐOÁN SỐ MAY MẮN & PHONG THỦY")
 
 st.markdown("""
@@ -171,7 +161,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if not HAS_LUNAR_LIB:
-    st.warning("⚠️ Chưa cài đặt thư viện 'lunardate'. Hệ thống sẽ tính Mệnh dựa trên năm Dương lịch (có thể sai lệch nếu sinh vào tháng 1, 2 âm lịch). Vui lòng cài đặt: `pip install lunardate`")
+    st.warning("⚠️ Chưa cài đặt thư viện 'lunardate'. Hệ thống sẽ tính Mệnh dựa trên năm Dương lịch. Vui lòng cài đặt: `pip install lunardate`")
 
 st.divider()
 
@@ -231,7 +221,6 @@ if submitted:
                 <h3>KẾT QUẢ PHÂN TÍCH</h3>
             """, unsafe_allow_html=True)
             
-            # Hiển thị từng số và mệnh của nó
             cols = st.columns(5)
             compatible_count = 0
             
@@ -239,21 +228,23 @@ if submitted:
                 num_menh = get_number_element(num)
                 is_hop, ly_do = check_compatibility(user_menh, num_menh)
                 
+                # Biến color này để đổi màu số to, nhưng ta cần cẩn thận với background
+                # Vì background đã là light (#f0f8ff), nên màu Đỏ (#D32F2F) hoặc Đen (black) đều rõ.
                 color = "black"
                 if is_hop:
                     compatible_count += 1
-                    color = "#D32F2F" # Đỏ nếu hợp
+                    color = "#D32F2F"
                 
                 with cols[idx]:
+                    # Style inline này cũng cần đảm bảo màu sắc
                     st.markdown(f"""
                     <div style="text-align: center;">
-                        <div class="big-font" style="color: {color}">{num}</div>
+                        <div class="big-font" style="color: {color} !important">{num}</div>
                         <div class="element-text">Hành: {num_menh}</div>
-                        <div style="font-size: 12px; color: {'green' if is_hop else '#999'}">{ly_do}</div>
+                        <div style="font-size: 12px; font-weight: bold; color: {'#2E7D32' if is_hop else '#757575'} !important">{ly_do}</div>
                     </div>
                     """, unsafe_allow_html=True)
             
-            # Đóng thẻ div result-box (bằng cách mở markdown mới để tránh lỗi render columns)
             st.markdown("</div>", unsafe_allow_html=True)
             
             # Phần thống kê
@@ -269,3 +260,6 @@ if submitted:
             time_color = "green" if is_online else "red"
             source_text = "Google Server" if is_online else "Offline Mode"
             st.caption(f"Time check: {now_dt.strftime('%H:%M:%S')} ({source_text})")
+
+# --- FOOTER MỚI ---
+st.markdown('<div class="footer">Created by MinhMup</div>', unsafe_allow_html=True)
