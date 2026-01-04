@@ -80,29 +80,36 @@ with st.form("main_form"):
     st.markdown("**2. Bạn chọn số cho ngày nào?**")
     target_date = st.date_input("Chọn ngày muốn dự đoán", value=datetime.now())
 
-    # 3. Số yêu thích
-    st.markdown("**3. Ba con số hôm nay bạn thích (2 chữ số, VD: 05, 99)**")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        fav1 = st.text_input("Số 1", max_chars=2, placeholder="VD: 01")
-    with c2:
-        fav2 = st.text_input("Số 2", max_chars=2, placeholder="VD: 09")
-    with c3:
-        fav3 = st.text_input("Số 3", max_chars=2, placeholder="VD: 88")
+    # 3. Số yêu thích (Đã sửa: Tối đa 5 số, không bắt buộc)
+    st.markdown("**3. Những con số bạn đang nghĩ tới (2 chữ số, VD: 05, 99). Tối đa 5 số, có thể để trống.**")
+    
+    # Tạo 5 cột cho 5 ô nhập
+    cols = st.columns(5)
+    fav_inputs = []
+    
+    # Tạo input trong vòng lặp cho gọn
+    for i, col in enumerate(cols):
+        with col:
+            val = st.text_input(f"Số {i+1}", max_chars=2, placeholder="--")
+            fav_inputs.append(val)
 
     # Nút bấm
     submitted = st.form_submit_button("PHÂN TÍCH NGAY", use_container_width=True, type="primary")
 
 # --- XỬ LÝ KHI BẤM NÚT ---
 if submitted:
-    # Validation
-    favs = [fav1, fav2, fav3]
+    # Validation logic mới
+    valid_favs = []
     errors = []
     
-    # Kiểm tra số yêu thích
-    for i, f in enumerate(favs, 1):
-        if not f.isdigit() or len(f) != 2:
-            errors.append(f"Số thứ {i} không hợp lệ (Phải là 2 chữ số).")
+    # Kiểm tra từng ô nhập
+    for i, f in enumerate(fav_inputs, 1):
+        f = f.strip() # Xóa khoảng trắng thừa
+        if f: # Chỉ kiểm tra nếu người dùng CÓ nhập
+            if not f.isdigit() or len(f) != 2:
+                errors.append(f"Số thứ {i} ('{f}') không hợp lệ (Phải là 2 chữ số).")
+            else:
+                valid_favs.append(f)
     
     if errors:
         for e in errors:
@@ -117,18 +124,24 @@ if submitted:
             source_text = "Google Server" if is_online else "Offline Mode"
             st.markdown(f"⏱️ Time check: **{now_dt.strftime('%d/%m/%Y - %H:%M:%S')}** (<span style='color:{time_color}'>{source_text}</span>)", unsafe_allow_html=True)
 
-            # --- TẠO SEED (GIỮ NGUYÊN THUẬT TOÁN CŨ) ---
-            # Format lại ngày tháng từ object date sang chuỗi ddmmyyyy để khớp logic cũ
+            # --- TẠO SEED ---
+            # Format lại ngày tháng từ object date sang chuỗi ddmmyyyy
             dob_str = dob.strftime("%d%m%Y")
             target_date_str = target_date.strftime("%d%m%Y")
             
-            # Seed kết hợp: Ngày sinh + Ngày chọn + Thời gian thực + Số yêu thích
-            seed_val = f"{dob_str}{target_date_str}{now_dt.strftime('%d%m%Y%H%M%S')}{''.join(favs)}"
+            # Seed kết hợp: Ngày sinh + Ngày chọn + Thời gian thực + Số yêu thích (chỉ lấy số hợp lệ)
+            # Nếu không nhập số nào, valid_favs là rỗng -> vẫn chạy bình thường dựa trên ngày giờ
+            fav_string = "".join(valid_favs)
+            
+            seed_val = f"{dob_str}{target_date_str}{now_dt.strftime('%d%m%Y%H%M%S')}{fav_string}"
+            
+            # Debug (có thể xóa dòng này nếu không muốn hiện seed ra console)
+            # print(f"Seed generated: {seed_val}") 
             
             # Áp dụng seed
             random.seed(seed_val)
             
-            # Tạo 5 số
+            # Tạo 5 số ngẫu nhiên
             kq = [f"{random.randint(0,99):02d}" for _ in range(5)]
             
             # Hiển thị kết quả
