@@ -310,6 +310,11 @@ if submitted:
 # 2. Xử lý Boss Mode
 if st.session_state.get("show_boss_login"):
     st.markdown("### 🔒 Chế độ BOSS")
+    
+    # --- PHẦN THÊM MỚI ---
+    st.info("Đây là chế độ chạy tự động, hệ thống chọn số chỉ dừng khi có 5/5 số hợp mệnh và có ít nhất 1 số trùng với số giây của giờ động tâm. Liên hệ Minhmup để lấy pass")
+    # --------------------
+    
     password = st.text_input("Nhập mật khẩu kích hoạt:", type="password")
     
     if st.button("Kích hoạt chạy tự động"):
