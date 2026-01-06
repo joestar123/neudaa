@@ -19,14 +19,9 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- CSS FIX LỖI DARK MODE & UI & ẨN MENU ---
+# --- CSS FIX LỖI DARK MODE & UI ---
 st.markdown("""
 <style>
-    /* --- ẨN CÁC NÚT MẶC ĐỊNH CỦA STREAMLIT --- */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display:none;}
-
     /* 1. Class cho thẻ kết quả (Card) */
     .lucky-card {
         background-color: #f0f8ff;
